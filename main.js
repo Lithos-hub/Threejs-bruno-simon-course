@@ -85,29 +85,44 @@ const group = new THREE.Group();
 scene.add(group);
 
 // ** Objects
-const cube = new THREE.BoxGeometry(1, 1, 1);
+// const geometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
+
+
+
+const geometry = new THREE.BufferGeometry();
+
+const count = 5000;
+const positionsArray = new Float32Array(count * 3 * 3);
+
+for (let i = 0; i <= count * 3 * 3; i++) {
+  positionsArray[i] = Math.random() - 0.5;
+}
+
+const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
+geometry.setAttribute('position', positionsAttribute);
 
 // ** Materials
-const cubeMaterial = new THREE.MeshBasicMaterial({
+const geoMaterial = new THREE.MeshBasicMaterial({
   color: "#d63b3b",
+  wireframe: true,
 });
 
 // ** Meshes
-const cubeMesh = new THREE.Mesh(cube, cubeMaterial);
-scene.add(cubeMesh);
+const geometryMesh = new THREE.Mesh(geometry, geoMaterial);
+scene.add(geometryMesh);
 
 // ** Position
-cubeMesh.position.set(0, 0, 0); // X, Y, Z
+geometryMesh.position.set(0, 0, 0); // X, Y, Z
 
 // ** Scale
-cubeMesh.scale.set(1, 1, 1); // X, Y, Z
+geometryMesh.scale.set(1, 1, 1); // X, Y, Z
 
 // ** Rotation
-// cubeMesh.rotation.reorder('YXZ');
-cubeMesh.rotation.set(0, 0, 0); // X, Y, Z
+// geometryMesh.rotation.reorder('YXZ');
+geometryMesh.rotation.set(0, 0, 0); // X, Y, Z
 
 // ** Camera controls
-// camera.lookAt(cubeMesh.position);
+// camera.lookAt(geometryMesh.position);
 
 // ? |||||||| RENDER ||||||||
 
@@ -120,7 +135,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // Clock
 const clock = new THREE.Clock();
 
-// gsap.to(cubeMesh.position, {
+// gsap.to(geometryMesh.position, {
 //   duration: 1,
 //   delay: 1,
 //   x: 2
@@ -139,14 +154,14 @@ const animate = () => {
   // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3;
   // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3;
   // camera.position.y = cursor.y * 5;
-  // camera.lookAt(cubeMesh.position);
+  // camera.lookAt(geometryMesh.position);
 
   // Update objects
-  // cubeMesh.rotation.x = elapsedTime;
-  // cubeMesh.rotation.y = elapsedTime;
+  // geometryMesh.rotation.x = elapsedTime;
+  // geometryMesh.rotation.y = elapsedTime;
   // camera.position.y = Math.sin(elapsedTime);
   // camera.position.x = Math.cos(elapsedTime);
-  // camera.lookAt(cubeMesh.position);
+  // camera.lookAt(geometryMesh.position);
 
   // Render
   renderer.render(scene, camera);
