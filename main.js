@@ -2,6 +2,7 @@ import "./style.css";
 import * as THREE from "three";
 // ** import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
+import gsap from "gsap";
 
 // ? |||||||| SIZES ||||||||
 // ** Sizes and resize event
@@ -33,9 +34,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.x = 0.5;
-camera.position.y = 0.5;
-camera.position.z = 1;
+
+camera.position.setZ(2);
 
 scene.add(camera);
 
@@ -52,26 +52,9 @@ scene.add(group);
 // ** Objects
 const cube = new THREE.BoxGeometry(1, 1, 1);
 
-const groupCube1 = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1),
-  new THREE.MeshBasicMaterial({ color: 0x2b384b }),
-);
-const groupCube2 = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1),
-  new THREE.MeshBasicMaterial({ color: 0xcec058 }),
-);
-
-groupCube1.position.set(1.5, -1, -1)
-groupCube2.position.set(-0.5, -1, -1)
-
-group.position.set(0, 1, 0)
-group.rotation.set(2, 1.5, 0)
-group.add(groupCube1);
-group.add(groupCube2);
-
 // ** Materials
 const cubeMaterial = new THREE.MeshBasicMaterial({
-  color: "#1d2828",
+  color: "#d63b3b",
 });
 
 // ** Meshes
@@ -79,14 +62,14 @@ const cubeMesh = new THREE.Mesh(cube, cubeMaterial);
 scene.add(cubeMesh);
 
 // ** Position
-cubeMesh.position.set(1, -0.7, -0.5); // X, Y, Z
+cubeMesh.position.set(0, 0, 0); // X, Y, Z
 
 // ** Scale
-cubeMesh.scale.set(2, 0.5, 0.5); // X, Y, Z
+cubeMesh.scale.set(1, 1, 1); // X, Y, Z
 
 // ** Rotation
-cubeMesh.rotation.reorder('YXZ');
-cubeMesh.rotation.set(Math.PI * 0.25, Math.PI * 0.25, 0); // X, Y, Z
+// cubeMesh.rotation.reorder('YXZ');
+cubeMesh.rotation.set(0, 0, 0); // X, Y, Z
 
 // ** Camera controls
 // camera.lookAt(cubeMesh.position);
@@ -97,10 +80,35 @@ cubeMesh.rotation.set(Math.PI * 0.25, Math.PI * 0.25, 0); // X, Y, Z
 const canvas = document.querySelector(".webgl");
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
-  alpha: true,
 });
 
-camera.position.setZ(2);
-
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.render(scene, camera);
+
+// Clock
+const clock = new THREE.Clock();
+
+gsap.to(cubeMesh.position, {
+  duration: 1,
+  delay: 1,
+  x: 2
+});
+
+// ? |||||||| ANIMATIONS ||||||||
+
+const animate = () => {
+  const elapsedTime = clock.getElapsedTime();
+
+  // Update objects
+  cubeMesh.rotation.x = elapsedTime;
+  cubeMesh.rotation.z = elapsedTime;
+  camera.position.y = Math.sin(elapsedTime);
+  camera.position.x = Math.cos(elapsedTime);
+  // camera.lookAt(cubeMesh.position);
+
+  // Render
+  renderer.render(scene, camera);
+
+  window.requestAnimationFrame(animate);
+};
+
+animate();
