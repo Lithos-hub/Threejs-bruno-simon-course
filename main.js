@@ -31,8 +31,16 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
 
   renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // => If the device has a pixel ration over 2, we'll take 2
 });
+
+window.addEventListener('dblclick', () => {
+  if (!document.fullscreenElement) {
+    canvas.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+})
 
 // ? |||||||| SCENE & CAMERA ||||||||
 
