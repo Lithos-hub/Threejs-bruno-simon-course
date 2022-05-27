@@ -1,10 +1,10 @@
 import "./style.css";
 import * as THREE from "three";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+// ** import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
 
 // ? |||||||| SIZES ||||||||
-// Sizes and resize event
+// ** Sizes and resize event
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -23,46 +23,84 @@ window.addEventListener("resize", () => {
 
 // ? |||||||| SCENE & CAMERA ||||||||
 
-// Scene
+// ** Scene
 const scene = new THREE.Scene();
 
-// Camera
+// ** Camera
 const camera = new THREE.PerspectiveCamera(
   100,
   sizes.width / sizes.height,
   0.1,
   100
 );
-camera.position.x = 0;
-camera.position.y = 0;
-camera.position.z = 2;
+camera.position.x = 0.5;
+camera.position.y = 0.5;
+camera.position.z = 1;
 
 scene.add(camera);
 
-// ? |||||||| OBJECTS & MATERIALES & MESHES ||||||||
+// ** Axes helper
+const axesHelper = new THREE.AxesHelper(1.5); // Length as parameter
+scene.add(axesHelper);
 
-// Objects
-const sphere = new THREE.SphereBufferGeometry(5, 64, 64);
+// ? |||||||| OBJECTS & MATERIALS & MESHES, ETC ||||||||
 
-// Materials
-const sphereMaterial = new THREE.MeshBasicMaterial({
-  color: "#1d2828"
+// ** Group
+const group = new THREE.Group();
+scene.add(group);
+
+// ** Objects
+const cube = new THREE.BoxGeometry(1, 1, 1);
+
+const groupCube1 = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial({ color: 0x2b384b }),
+);
+const groupCube2 = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial({ color: 0xcec058 }),
+);
+
+groupCube1.position.set(1.5, -1, -1)
+groupCube2.position.set(-0.5, -1, -1)
+
+group.position.set(0, 1, 0)
+group.rotation.set(2, 1.5, 0)
+group.add(groupCube1);
+group.add(groupCube2);
+
+// ** Materials
+const cubeMaterial = new THREE.MeshBasicMaterial({
+  color: "#1d2828",
 });
 
-// Meshes
-const sphereMesh = new THREE.Mesh(sphere, sphereMaterial);
-scene.add(sphereMesh);
+// ** Meshes
+const cubeMesh = new THREE.Mesh(cube, cubeMaterial);
+scene.add(cubeMesh);
+
+// ** Position
+cubeMesh.position.set(1, -0.7, -0.5); // X, Y, Z
+
+// ** Scale
+cubeMesh.scale.set(2, 0.5, 0.5); // X, Y, Z
+
+// ** Rotation
+cubeMesh.rotation.reorder('YXZ');
+cubeMesh.rotation.set(Math.PI * 0.25, Math.PI * 0.25, 0); // X, Y, Z
+
+// ** Camera controls
+// camera.lookAt(cubeMesh.position);
 
 // ? |||||||| RENDER ||||||||
 
-// Canvas and renderer
+// ** Canvas and renderer
 const canvas = document.querySelector(".webgl");
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   alpha: true,
 });
 
-camera.position.setZ(10);
+camera.position.setZ(2);
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.render(scene, camera);
