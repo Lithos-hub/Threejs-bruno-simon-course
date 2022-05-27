@@ -1,8 +1,8 @@
 import "./style.css";
 import * as THREE from "three";
-// ** import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import * as dat from "dat.gui";
-import gsap from "gsap";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
+const canvas = document.querySelector(".webgl");
 
 // ? |||||||| SIZES ||||||||
 // ** Sizes and resize event
@@ -10,6 +10,18 @@ const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
+
+// ? |||||||| CURSOR ||||||||
+
+const cursor = {
+  x: 0,
+  y: 0,
+};
+
+window.addEventListener("mousemove", (e) => {
+  cursor.x = e.clientX / sizes.width - 0.5;
+  cursor.y = e.clientY / sizes.height - 0.5;
+});
 
 window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
@@ -27,17 +39,32 @@ window.addEventListener("resize", () => {
 // ** Scene
 const scene = new THREE.Scene();
 
-// ** Camera
+// ** Cameras
+
 const camera = new THREE.PerspectiveCamera(
-  100,
-  sizes.width / sizes.height,
-  0.1,
-  100
+  75, // => FOV
+  sizes.width / sizes.height, // => Aspect ratio
+  0.1, // => Near
+  100 // => Far
 );
 
-camera.position.setZ(2);
+// const aspectRatio = sizes.width / sizes.height;
+// const camera = new THREE.OrthographicCamera(
+//   -1 * aspectRatio,
+//   1 * aspectRatio,
+//   1,
+//   -1,
+//   0.1,
+//   100
+// );
+
+camera.position.setZ(3);
 
 scene.add(camera);
+
+// ** Controls
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true;
 
 // ** Axes helper
 const axesHelper = new THREE.AxesHelper(1.5); // Length as parameter
@@ -77,32 +104,40 @@ cubeMesh.rotation.set(0, 0, 0); // X, Y, Z
 // ? |||||||| RENDER ||||||||
 
 // ** Canvas and renderer
-const canvas = document.querySelector(".webgl");
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
-
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Clock
 const clock = new THREE.Clock();
 
-gsap.to(cubeMesh.position, {
-  duration: 1,
-  delay: 1,
-  x: 2
-});
+// gsap.to(cubeMesh.position, {
+//   duration: 1,
+//   delay: 1,
+//   x: 2
+// });
 
 // ? |||||||| ANIMATIONS ||||||||
 
 const animate = () => {
   const elapsedTime = clock.getElapsedTime();
 
+  // Orbit controls
+  controls.update();
+  
+
+  // Update camera
+  // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3;
+  // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3;
+  // camera.position.y = cursor.y * 5;
+  // camera.lookAt(cubeMesh.position);
+
   // Update objects
-  cubeMesh.rotation.x = elapsedTime;
-  cubeMesh.rotation.z = elapsedTime;
-  camera.position.y = Math.sin(elapsedTime);
-  camera.position.x = Math.cos(elapsedTime);
+  // cubeMesh.rotation.x = elapsedTime;
+  // cubeMesh.rotation.y = elapsedTime;
+  // camera.position.y = Math.sin(elapsedTime);
+  // camera.position.x = Math.cos(elapsedTime);
   // camera.lookAt(cubeMesh.position);
 
   // Render
