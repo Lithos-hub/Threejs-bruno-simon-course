@@ -1,6 +1,8 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import gsap from "gsap";
 import * as dat from "dat.gui";
 
@@ -55,26 +57,74 @@ camera.position.setZ(5);
 scene.add(camera);
 
 // ** Controls
-const controls = new OrbitControls(camera, canvas)
+const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 // ** Axes helper
-const axesHelper = new THREE.AxesHelper(1.5); // Length as parameter
+const axesHelper = new THREE.AxesHelper(2); // Length as parameter
 scene.add(axesHelper);
 
 // ? |||||||| LIGHTS ||||||||
 
 // ? |||||||| TEXTURES ||||||||
+const textureLoader = new THREE.TextureLoader();
+const matcapTexture = textureLoader.load('./img/textures/matcap2.png');
+
+// ? |||||||| FONTS ||||||||
+const fontLoader = new FontLoader();
+
+fontLoader.load("./fonts/helvetiker_regular.typeface.json", (loadedFont) => {
+  const textGeometry = new TextGeometry("Learning Three.js", {
+    font: loadedFont,
+    size: 1,
+    height: 0.1,
+    curveSegments: 5,
+    bevelEnabled: true,
+    bevelThickness: 0.1,
+    bevelSize: 0.1,
+    bevelOffset: 0,
+    bevelSegments: 64,
+  });
+  // textGeometry.computeBoundingBox();
+  // textGeometry.translate(
+  //   -(textGeometry.boundingBox.max.x - 0.1) * 0.5, // => minus bebelSize
+  //   -(textGeometry.boundingBox.max.y - 0.1) * 0.5, // => minus bebelSize
+  //   -(textGeometry.boundingBox.max.z - 0.05) * 0.5 // => minus bebelThickness
+  // )
+  textGeometry.center() // => Do the same of above
+
+  const textMesh = new THREE.Mesh(textGeometry, material);
+  scene.add(textMesh);
+});
 
 // ? |||||||| OBJECTS & MATERIALS & MESHES, ETC ||||||||
 
 // ** Group
 
 // ** Materials
-
+const material = new THREE.MeshMatcapMaterial({
+  matcap: matcapTexture,
+});
 
 // ** Objects
+const starGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 
+for (let i = 0; i < 10000; i++) {
+  const star = new THREE.Mesh(starGeometry, material);
+  star.position.set(
+    (Math.random() - 0.5) * 10,
+    (Math.random() - 0.5) * 10,
+    (Math.random() - 0.5) * 10
+  );
+  star.rotation.set(
+    (Math.random() - 0.5) * Math.PI,
+    (Math.random() - 0.5) * Math.PI,
+    (Math.random() - 0.5) * Math.PI
+  );
+  const randomNum = Math.random() * 0.1;
+  star.scale.set(randomNum, randomNum, randomNum);
+  scene.add(star);
+}
 
 // ** Meshes
 
@@ -82,9 +132,7 @@ scene.add(axesHelper);
 
 // ** Scale
 
-
 // ** Rotation
-
 
 // ** Camera controls
 
@@ -102,17 +150,15 @@ const clock = new THREE.Clock();
 // ? |||||||| ANIMATIONS ||||||||
 
 let theta = 0;
-let dTheta = 2 * Math.PI / 500;
+let dTheta = (2 * Math.PI) / 500;
 
 const animate = () => {
   const elapsedTime = clock.getElapsedTime();
 
   // Orbit controls
   controls.update();
-  
 
   // Update camera
-
 
   // Update objects
 
