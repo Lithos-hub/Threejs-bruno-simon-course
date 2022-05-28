@@ -36,14 +36,6 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // => If the device has a pixel ration over 2, we'll take 2
 });
 
-// window.addEventListener('dblclick', () => {
-//   if (!document.fullscreenElement) {
-//     canvas.requestFullscreen();
-//   } else {
-//     document.exitFullscreen();
-//   }
-// })
-
 // ? |||||||| SCENE & CAMERA ||||||||
 
 // ** Scene
@@ -58,18 +50,7 @@ const camera = new THREE.PerspectiveCamera(
   1000 // => Far
 );
 
-// const aspectRatio = sizes.width / sizes.height;
-// const camera = new THREE.OrthographicCamera(
-//   -1 * aspectRatio,
-//   1 * aspectRatio,
-//   1,
-//   -1,
-//   0.1,
-//   100
-// );
-
-camera.position.setZ(80);
-camera.position.setY(5);
+camera.position.setZ(5);
 
 scene.add(camera);
 
@@ -81,85 +62,151 @@ controls.enableDamping = true;
 const axesHelper = new THREE.AxesHelper(1.5); // Length as parameter
 scene.add(axesHelper);
 
+// ? |||||||| LIGHTS ||||||||
+const ambientLight = new THREE.AmbientLight("white", 0.5);
+scene.add(ambientLight)
+
+const pointLight = new THREE.PointLight("white", 0.5);
+
+pointLight.position.x = 2
+pointLight.position.y = 3
+pointLight.position.z = 4
+
+scene.add(pointLight);
+
 // ? |||||||| TEXTURES ||||||||
-// const image = new Image()
-// const texture = new THREE.Texture(image);
+const textureLoader = new THREE.TextureLoader();
+const matcapTexture = textureLoader.load('./img/textures/matcap.jpg');
+const ceramicTexture = textureLoader.load('./img/textures/ceramic.jpg');
+const rockTexture = textureLoader.load('./img/textures/rock.jpg');
+const earthTexture = textureLoader.load('./img/textures/earth.jpg');
+const paperTexture = textureLoader.load('./img/textures/paper.jpg');
+const gradientTexture = textureLoader.load('./img/textures/gradient1.jpg');
+gradientTexture.minFilter = THREE.NearestFilter;
+gradientTexture.magFilter = THREE.NearestFilter;
+const brickTexture = textureLoader.load('./img/textures/brick.jpg');
+const brickTextureAO = textureLoader.load('./img/textures/brick-ao.jpg');
+const brickNormalMap = textureLoader.load('./img/textures/brick-normalmap.png');
+const cubeTextureLoader = new THREE.CubeTextureLoader();
 
-// image.onload = () => {
-//   texture.needsUpdate = true;
-// }
-// image.src = './img/textures/textureWood.jpg';
-const loadingManager = new THREE.LoadingManager();
-
-loadingManager.onStart = () => console.log('LOADING MANAGER - Start loading');
-loadingManager.onLoad = () => console.log('LOADING MANAGER - Loaded');
-loadingManager.onProgress = () => console.log('LOADING MANAGER - Progress');
-loadingManager.onError = () => console.log('LOADING MANAGER - Error');
-
-const textureLoader = new THREE.TextureLoader(loadingManager)
-const textureMoon = textureLoader.load('./img/textures/moon.jpg',
-  // () => console.log('Loading texture...'),
-  // () => console.log('Progress texture...'),
-  // () => console.log('Error when loading texture.'),
-  )
-const textureEarth = textureLoader.load('./img/textures/earth.jpg');
-const textureWood = textureLoader.load('./img/textures/wood.jpg');
-
-textureWood.repeat.x = 2;
-textureWood.repeat.y = 3;
-textureWood.wrapS = THREE.MirroredRepeatWrapping;
-textureWood.wrapT = THREE.MirroredRepeatWrapping;
-
-textureWood.offset.x = 0.5; // => Texture replacement to the right
-textureWood.rotation = 1;
+const environmentMapTexture = cubeTextureLoader.load([
+  './img/environmentMaps/2/px.jpg', // Right (positive x)
+  './img/environmentMaps/2/nx.jpg', // Left   (negative x) 
+  './img/environmentMaps/2/py.jpg', // Top    (positive y)
+  './img/environmentMaps/2/ny.jpg', // Bottom (negative y)
+  './img/environmentMaps/2/pz.jpg', // Front  (positive z)
+  './img/environmentMaps/2/nz.jpg', // Back   (negative z)
+]);
 
 // ? |||||||| OBJECTS & MATERIALS & MESHES, ETC ||||||||
 
 // ** Group
-const group = new THREE.Group();
-scene.add(group);
-
-// ** Objects
-const geometryMoon = new THREE.SphereGeometry(1, 64, 64);
-const geometryEarth = new THREE.SphereGeometry(1, 64, 64);
-const geometryCube = new THREE.BoxGeometry(1, 1, 1);
-
-// const geometryMoon = new THREE.BuffergeometryMoon();
 
 // ** Materials
-const materialMoon = new THREE.MeshBasicMaterial({
-  wireframe: false,
-  map: textureMoon,
+// const ceramicMaterial = new THREE.MeshBasicMaterial({
+  // color: "#2173f7",
+  // map: ceramicTexture,
+  // alpha: true,
+  // transparent: true,
+  // opacity: 0.8,
+  // alphaMap: ceramicTexture,
+  // side: THREE.FrontSide,
+// });
+
+// const material = new THREE.MeshNormalMaterial({
+//   wireframe: true
+// });
+
+// const material = new THREE.MeshMatcapMaterial({
+//   matcap: matcapTexture,
+// });
+
+// const material = new THREE.MeshDepthMaterial();
+
+// const material = new THREE.MeshLambertMaterial();
+
+// const material = new THREE.MeshPhongMaterial({
+//   shininess: 100,
+//   specular: "red"
+// });
+
+// const material = new THREE.MeshToonMaterial({
+//   map: gradientTexture
+// });
+
+// const material = new THREE.MeshStandardMaterial({
+//   metalness: 0.4,
+//   roughness: 0.6,
+//   map: brickTexture,
+//   aoMap: brickTextureAO,
+//   aoMapIntesity: 10,
+//   displacementMap: brickTexture,
+//   wireframe: false,
+//   displacementScale: 0.01,
+//   metalnessMap: brickTexture,
+//   roughnessMap: brickTexture,
+//   normalMap: brickTexture,
+// });
+// material.normalScale.set(0.8, 0.8);
+
+const material = new THREE.MeshStandardMaterial({
+  metalness: 0.7,
+  roughness: 0.2,
+  envMap: environmentMapTexture,
 });
-const materialEarth = new THREE.MeshBasicMaterial({
-  wireframe: false,
-  map: textureEarth,
-});
-const materialCube = new THREE.MeshBasicMaterial({
-  wireframe: false,
-  map: textureWood,
-});
+
+// const rockMaterial = new THREE.MeshNormalMaterial({
+//   map: rockTexture,
+//   wireframe: true,
+//   flatShading: true
+// });
+
+// const paperMaterial = new THREE.MeshBasicMaterial({
+//   map: paperTexture,
+//   side: THREE.DoubleSide,
+// });
+
+// ** Objects
+const sphere = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 64, 64),
+  material,
+);
+
+const plane = new THREE.Mesh(
+  new THREE.PlaneGeometry(1, 1, 100, 100),
+  material
+)
+
+const torus = new THREE.Mesh(
+  new THREE.TorusGeometry(0.5, 0.1, 64, 128),
+  material
+);
+
+sphere.geometry.setAttribute(
+  "uv2", 
+  new THREE.BufferAttribute(sphere.geometry.attributes.uv.array, 2)
+);
+plane.geometry.setAttribute(
+  "uv2", 
+  new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2)
+);
+torus.geometry.setAttribute(
+  "uv2", 
+  new THREE.BufferAttribute(torus.geometry.attributes.uv.array, 2)
+);
 
 // ** Meshes
-const geometryMoonMesh = new THREE.Mesh(geometryMoon, materialMoon);
-const geometryEarthMesh = new THREE.Mesh(geometryEarth, materialEarth);
-const geometryCubeMesh = new THREE.Mesh(geometryCube, materialCube);
-scene.add(geometryMoonMesh);
-scene.add(geometryEarthMesh);
-scene.add(geometryCubeMesh);
+scene.add(sphere, plane, torus);
 
 // ** Position
-geometryMoonMesh.position.set(5, 0, -5); // X, Y, Z
-geometryEarthMesh.position.set(0, 0, 0); // X, Y, Z
+sphere.position.x -= 2;
+torus.position.x = 2;
 
 // ** Scale
-geometryMoonMesh.scale.set(1, 1, 1); // X, Y, Z
-geometryEarthMesh.scale.set(5, 5, 5); // X, Y, Z
+
 
 // ** Rotation
-// geometryMoonMesh.rotation.reorder('YXZ');
-geometryMoonMesh.rotation.set(0, 0, 0); // X, Y, Z
-geometryEarthMesh.rotation.set(0, 0, 0.1); // X, Y, Z
+
 
 // ** Camera controls
 // camera.lookAt(geometryMoonMesh.position);
@@ -175,16 +222,10 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // Clock
 const clock = new THREE.Clock();
 
-// gsap.to(geometryMoonMesh.position, {
-//   duration: 1,
-//   delay: 1,
-//   x: 2
-// });
-
 // ? |||||||| ANIMATIONS ||||||||
 
 let theta = 0;
-let dTheta = 2 * Math.PI / 1000;
+let dTheta = 2 * Math.PI / 500;
 
 const animate = () => {
   const elapsedTime = clock.getElapsedTime();
@@ -194,29 +235,16 @@ const animate = () => {
   
 
   // Update camera
-  // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3;
-  // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3;
-  // camera.position.y = cursor.y * 5;
-  // camera.lookAt(geometryMoonMesh.position);
+
 
   // Update objects
-  // geometryMoonMesh.rotation.x = elapsedTime;
-  geometryEarthMesh.rotation.y -= 0.01
-  theta += dTheta * 2;
-  geometryMoonMesh.rotation.x += 0.01;
-  geometryMoonMesh.position.x = 35 * Math.cos(theta);
-  geometryMoonMesh.position.y = 35 * Math.cos(theta) / 2;
-  geometryMoonMesh.position.z = 35 * Math.sin(theta);
-  // camera.position.y = Math.sin(elapsedTime);
-  // camera.position.y = Math.cos(elapsedTime);
-  // camera.lookAt(geometryEarthMesh.position);
+  sphere.rotation.y += dTheta;
+  plane.rotation.y += dTheta;
+  torus.rotation.y += dTheta;
 
-  // ! Important: Use textures with a width and height power of 2 (512 x 512, 1024 x 1024, etc.)
-
-  
-  textureEarth.generateMipmaps = false; // => Will not divide the texture to mipmaps. We'll gain at performance
-  textureEarth.minFilter = THREE.NearestFilter // => Used when the objects is very far. The texture will be sharper
-  textureEarth.magFilter = THREE.NearestFilter // => Used when the objects is very close or the texture image is very small. The texture will be sharper
+  sphere.rotation.x += dTheta;
+  plane.rotation.x += dTheta;
+  torus.rotation.x += dTheta;
 
   // Render
   renderer.render(scene, camera);
@@ -226,27 +254,9 @@ const animate = () => {
 
 animate();
 
-// ? |||||||| DEBUG ||||||||
-const gui = new dat.GUI({ closed: true, width: 500 });
-gui.hide();
-
-const debugObject = {
-  color: "#d63b3b",
-  spin: () => gsap.to(geometryMoonMesh.rotation, { duration: 1, y: geometryMoonMesh.rotation.y + 10 }),
-}
-// => object and property to add, name of property, min, max and step
-gui.add(geometryMoonMesh.position, 'y', -3, 3, 0.01).name('Cube Y');
-gui.add(geometryMoonMesh.position, 'x', -3, 3, 0.01).name('Cube X');
-gui.add(geometryMoonMesh.position, 'z', -3, 3, 0.01).name('Cube Z');
-gui.add(geometryMoonMesh, 'visible').name('Cube visibility');
-gui.add(materialMoon, 'wireframe').name('Cube wireframe');
-
-gui.add(debugObject, 'spin').name('Cube spin');
-
-gui
-.addColor(debugObject, 'color')
-.name('Cube color')
-.onChange(() => materialMoon.color.set(debugObject.color));
-// gui.add(geometryMoonMesh.position, 'y').min(-3).max(3).step(0.01);
-// gui.add(geometryMoonMesh.position, 'x').min(-3).max(3).step(0.01);
-// gui.add(geometryMoonMesh.position, 'z').min(-3).max(3).step(0.01);
+// ? |||||||| GUI ||||||||
+const gui = new dat.GUI();
+gui.add(material, 'metalness', 0, 1, 0.001);
+gui.add(material, 'roughness', 0, 1, 0.001);
+gui.add(material, 'aoMapIntensity', 0, 10, 0.001);
+gui.add(material, 'displacementScale', 0, 10, 0.001);
