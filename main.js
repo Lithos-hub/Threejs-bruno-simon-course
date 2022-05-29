@@ -65,49 +65,9 @@ scene.add(axesHelper);
 // ? |||||||| LIGHTS ||||||||
 
 // ? |||||||| TEXTURES ||||||||
-const textureLoader = new THREE.TextureLoader();
-const particleTexture = textureLoader.load('./img/textures/particle.jpg');
 
 // ? |||||||| PARTICLES ||||||||
-const particlesGeometry = new THREE.BufferGeometry();
 
-const count = 20000;
-
-const positions = new Float32Array(count * 3);
-const colors = new Float32Array(count * 3);
-
-for (let i = 0; i < count * 3; i++) {
-  positions[i] = (Math.random() - 0.5) * 10
-  colors[i] = Math.random()
-}
-
-particlesGeometry.setAttribute(
-  "position",
-  new THREE.BufferAttribute(positions, 3)
-)
-particlesGeometry.setAttribute(
-  "color",
-  new THREE.BufferAttribute(colors, 3)
-)
-
-
-const particlesMaterial = new THREE.PointsMaterial({
-  color: "white",
-  size: 0.05,
-  sizeAttenuation: true,
-  map: particleTexture,
-  transparent: true,
-  alphaMap: particleTexture,
-  // alphaTest: 0.5,
-  // depthTest: false,
-  depthWrite: false,
-  blending: THREE.AdditiveBlending,
-  vertexColors: true,
-});
-
-const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-
-scene.add(particles);
 // ? |||||||| OBJECTS & MATERIALS & MESHES, ETC ||||||||
 
 // ** Group
@@ -149,14 +109,7 @@ const animate = () => {
   controls.update();
 
   // Update particles
-  for (let i = 0; i < count; i++) {
-    const i3 = i * 3;
 
-    const x = particlesGeometry.attributes.position.array[i3 + 0];
-    particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + x); // Y axis
-
-  }
-  particlesGeometry.attributes.position.needsUpdate = true;
   // Render
   renderer.render(scene, camera);
 
