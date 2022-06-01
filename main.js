@@ -4,38 +4,42 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import gsap from "gsap";
 import * as dat from "dat.gui";
 import { DoubleSide } from "three";
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 
 const canvas = document.querySelector(".webgl");
 
 // ? |||||||| DRACO Loader ||||||||
 const DRACO = new DRACOLoader();
-DRACO.setDecoderPath('/static/draco/')
+DRACO.setDecoderPath("/static/draco/");
 // ? |||||||| GLTF Loader ||||||||
 const gltf = new GLTFLoader();
 gltf.setDRACOLoader(DRACO);
 
-gltf.load(
-  './static/models/Duck/glTF-Draco/Duck.gltf',
-  (model) => {
-    // ! Method 1 (Wrong)
-    // model.scene.children.forEach(model => scene.add(model)) // => Doesn't add the full mesh
-    
-    // ! Method 2 (Correct - We take the length of the array)
-    // while(model.scene.children.length) {
-    //   scene.add(model.scene.children[0]);
-    // }
+let mixer = null
 
-    // ! Method 3 (Correct - We duplicate the array)
-    // const children = [...model.scene.children];
-    // children.forEach(child => scene.add(child));
+gltf.load("./static/models/Fox/glTF/Fox.gltf", (model) => {
+  // ! Method 1 (Wrong)
+  // model.scene.children.forEach(model => scene.add(model)) // => Doesn't add the full mesh
 
-    // ! Method 4 (Correct - We add the whole scene)
-    scene.add(model.scene);
-  }
-)
+  // ! Method 2 (Correct - We take the length of the array)
+  // while(model.scene.children.length) {
+  //   scene.add(model.scene.children[0]);
+  // }
 
+  // ! Method 3 (Correct - We duplicate the array)
+  // const children = [...model.scene.children];
+  // children.forEach(child => scene.add(child));
+
+  // ! Method 4 (Correct - We add the whole scene)
+  
+  mixer = new THREE.AnimationMixer(model.scene);
+  const action = mixer.clipAction(model.animations[2]);
+  action.play()
+  
+  model.scene.scale.set(0.025, 0.025, 0.025);
+  scene.add(model.scene);
+});
 
 // ? |||||||| SIZES ||||||||
 // ** Sizes and resize event
@@ -115,12 +119,16 @@ scene.add(ambientLight, directionalLight);
 
 const floorMesh = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
-  new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5, side: DoubleSide })
+  new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.5,
+    side: DoubleSide,
+  })
 );
 
 floorMesh.rotation.x = Math.PI * 0.5;
 
-scene.add(floorMesh)
+scene.add(floorMesh);
 // ** Position
 
 // ** Scale
@@ -144,9 +152,14 @@ const clock = new THREE.Clock();
 
 let theta = 0;
 let dTheta = (2 * Math.PI) / 500;
+let previousTime = 0
 
 const animate = () => {
   const elapsedTime = clock.getElapsedTime();
+  const deltaTime = elapsedTime - previousTime;
+  previousTime = elapsedTime;
+  // Update mixer
+  if (mixer !== null) mixer.update(deltaTime)
 
   // Orbit controls
   controls.update();
