@@ -18,7 +18,7 @@ gltf.setDRACOLoader(DRACO);
 
 let mixer = null
 
-gltf.load("./static/models/Fox/glTF/Fox.gltf", (model) => {
+gltf.load("./static/models/kitchen/kitchen.glb", (model) => {
   // ! Method 1 (Wrong)
   // model.scene.children.forEach(model => scene.add(model)) // => Doesn't add the full mesh
 
@@ -33,11 +33,11 @@ gltf.load("./static/models/Fox/glTF/Fox.gltf", (model) => {
 
   // ! Method 4 (Correct - We add the whole scene)
   
-  mixer = new THREE.AnimationMixer(model.scene);
-  const action = mixer.clipAction(model.animations[2]);
-  action.play()
+  // mixer = new THREE.AnimationMixer(model.scene);
+  // const action = mixer.clipAction(model.animations[2]);
+  // action.play()
   
-  model.scene.scale.set(0.025, 0.025, 0.025);
+  // model.scene.scale.set(1, 1, 1);
   scene.add(model.scene);
 });
 
